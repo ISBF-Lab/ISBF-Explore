@@ -10,6 +10,18 @@
 enabled_site_setting :isbf_explore_enabled
 
 after_initialize do
+  require_relative "lib/isbf_explore/category_filter"
+
+  add_filter_custom_filter("isbf-category") do |scope, filter_values, guardian|
+    IsbfExplore::CategoryFilter.apply(scope, filter_values, guardian)
+  end
+
+  add_to_serializer(
+    :site,
+    :isbf_explore_category_id_filter,
+    include_condition: -> { SiteSetting.isbf_explore_enabled },
+  ) { true }
+
   add_to_serializer(
     :detailed_tag,
     :isbf_explore_filter_name,
